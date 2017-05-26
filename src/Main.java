@@ -12,7 +12,7 @@ public class Main {
         JFrame window = new JFrame("Multithreading");
         MainPanel mainPanel = new MainPanel();
         window.add(mainPanel);
-        window.setBounds((int)(screenSize.getWidth()/4),(int)(screenSize.getHeight()/4),800,600);
+        window.setBounds((int)(screenSize.getWidth()/4),(int)(screenSize.getHeight()/10),800,600);
         window.setResizable(false);
         window.setVisible(true);
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

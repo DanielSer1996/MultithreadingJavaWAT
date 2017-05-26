@@ -22,7 +22,7 @@ public class SecondComponent {
 
     private Image loadImage(){
         try {
-            return ImageIO.read(new File("textures\\secondComponent.png"));
+            return ImageIO.read(new File("textures/secondComponent.png"));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
