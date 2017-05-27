@@ -3,7 +3,8 @@ package Multithreading.Magazines;
 import Multithreading.Components.FirstComponent;
 import Multithreading.Components.SecondComponent;
 import Multithreading.MainPanel;
-import Multithreading.Trucks.Provider;
+import Multithreading.Trucks.ProviderFirst;
+import Multithreading.Trucks.ProviderSecond;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -23,13 +24,15 @@ public class ComponentsMagazines {
     private List<SecondComponent> magazineSecond;
     private Semaphore takeFromMagazineFirst, putIntoMagazineFirst;
     private Semaphore takeFromMagazineSecond, putIntoMagazineSecond;
+    private Semaphore protectSingleComponentFirst, protectSingleComponentSecond;
     private Semaphore carBusy;
     private int xFirst, yFirst, widthFirst, heightFirst;
     private int xSecond, ySecond, widthSecond, heightSecond;
     private Image imgFirst;
     private Image imgSecond;
     private MainPanel panel;
-    Provider provider;
+    ProviderFirst providerFirst;
+    ProviderSecond providerSecond;
 
     public ComponentsMagazines(MainPanel panel){
         this.panel = panel;
@@ -39,12 +42,14 @@ public class ComponentsMagazines {
         this.putIntoMagazineFirst = new Semaphore(1);
         this.takeFromMagazineSecond = new Semaphore(0);
         this.putIntoMagazineSecond = new Semaphore(1);
+        this.protectSingleComponentFirst = new Semaphore(1);
+        this.protectSingleComponentSecond = new Semaphore(1);
         this.carBusy = new Semaphore(1);
         this.imgFirst = loadImage();
         this.imgSecond = loadImage();
-        this.xFirst = 200;
+        this.xFirst = 130;
         this.yFirst = 40;
-        this.xSecond = 200;
+        this.xSecond = 130;
         this.ySecond = 400;
         this.widthFirst = imgFirst.getWidth(panel);
         this.heightFirst = imgFirst.getHeight(panel);
@@ -52,8 +57,12 @@ public class ComponentsMagazines {
         this.heightSecond = imgSecond.getHeight(panel);
     }
 
-    public void setProvider(Provider provider){
-        this.provider = provider;
+    public void setProviderFirst(ProviderFirst providerFirst){
+        this.providerFirst = providerFirst;
+    }
+
+    public void setProviderSecond(ProviderSecond providerSecond){
+        this.providerSecond = providerSecond;
     }
 
     public int getxFirst() {
@@ -144,25 +153,24 @@ public class ComponentsMagazines {
         return magazineSecond;
     }
 
-    public void putIntoMagazineFirst(FirstComponent firstComponent){
+    public void putIntoMagazineFirst(ArrayList<FirstComponent> firstComponent){
         try {
             putIntoMagazineFirst.acquire();
             carBusy.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        provider.comeToMagazine(1);
-        while(magazineFirst.size() < 10) {
-            magazineFirst.add(firstComponent);
+        providerFirst.comeToMagazine();
+        while(magazineFirst.size() < 10 && firstComponent.size()>0) {
+            magazineFirst.add(firstComponent.remove(0));
             takeFromMagazineFirst.release();
-            panel.repaint();
             try {
                 sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        provider.getAwayFromMagazine();
+        providerFirst.getAwayFromMagazine();
         carBusy.release();
     }
 
@@ -170,35 +178,36 @@ public class ComponentsMagazines {
         FirstComponent n;
         try {
             takeFromMagazineFirst.acquire();
+            protectSingleComponentFirst.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         n = magazineFirst.remove(0);
-        if(magazineFirst.size() < 2){
+        protectSingleComponentFirst.release();
+        if(magazineFirst.size() < 2 && putIntoMagazineFirst.hasQueuedThreads()){
             putIntoMagazineFirst.release();
         }
         return n;
     }
 
-    public void putIntoMagazineSecond(SecondComponent secondComponent){
+    public void putIntoMagazineSecond(ArrayList<SecondComponent> secondComponent){
         try {
             putIntoMagazineSecond.acquire();
             carBusy.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        provider.comeToMagazine(2);
-        while(magazineSecond.size() < 8) {
-            magazineSecond.add(secondComponent);
+        providerSecond.comeToMagazine();
+        while(magazineSecond.size() < 8 && secondComponent.size()>0) {
+            magazineSecond.add(secondComponent.remove(0));
             takeFromMagazineSecond.release();
-            panel.repaint();
             try {
                 sleep(110);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        provider.getAwayFromMagazine();
+        providerSecond.getAwayFromMagazine();
         carBusy.release();
     }
 
@@ -206,11 +215,13 @@ public class ComponentsMagazines {
         SecondComponent n;
         try {
             takeFromMagazineSecond.acquire();
+            protectSingleComponentSecond.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         n = magazineSecond.remove(0);
-        if(magazineSecond.size() < 2){
+        protectSingleComponentSecond.release();
+        if(magazineSecond.size() < 2 && putIntoMagazineSecond.hasQueuedThreads()){
             putIntoMagazineSecond.release();
         }
         return n;
