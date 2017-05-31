@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MultithreadingJavaWAT:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/MultithreadingJavaWAT_jar</output-path>
+    <root id="archive" name="MultithreadingJavaWAT.jar">
+      <element id="module-output" name="MultithreadingJavaWAT" />
+    </root>
+  </artifact>
+</component>

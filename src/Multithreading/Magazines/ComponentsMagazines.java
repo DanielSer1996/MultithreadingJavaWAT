@@ -26,6 +26,7 @@ public class ComponentsMagazines {
     private Semaphore takeFromMagazineSecond, putIntoMagazineSecond;
     private Semaphore protectSingleComponentFirst, protectSingleComponentSecond;
     private Semaphore carBusy;
+    private Semaphore magazineFirstDeliver, magazineSecondDeliver;
     private int xFirst, yFirst, widthFirst, heightFirst;
     private int xSecond, ySecond, widthSecond, heightSecond;
     private Image imgFirst;
@@ -48,7 +49,7 @@ public class ComponentsMagazines {
         this.imgFirst = loadImage();
         this.imgSecond = loadImage();
         this.xFirst = 130;
-        this.yFirst = 40;
+        this.yFirst = 300;
         this.xSecond = 130;
         this.ySecond = 400;
         this.widthFirst = imgFirst.getWidth(panel);

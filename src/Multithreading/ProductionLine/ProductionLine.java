@@ -1,8 +1,10 @@
 package Multithreading.ProductionLine;
 
 import Multithreading.Components.FirstComponent;
+import Multithreading.Components.Product;
 import Multithreading.Components.SecondComponent;
 import Multithreading.Magazines.ComponentsMagazines;
+import Multithreading.Magazines.ProductMagazine;
 
 import static java.lang.Thread.sleep;
 
@@ -10,15 +12,17 @@ import static java.lang.Thread.sleep;
  * Created by daniel on 27.05.17.
  */
 public class ProductionLine implements Runnable {
-    ComponentsMagazines componentsMagazines;
-    FirstComponent firstComponent;
-    SecondComponent secondComponent;
-    int x, y;
-    int percent;
-    int number;
+    private ComponentsMagazines componentsMagazines;
+    private FirstComponent firstComponent;
+    private SecondComponent secondComponent;
+    private ProductMagazine productMagazine;
+    private int x, y;
+    private int percent;
+    private Product product;
 
-    public ProductionLine(ComponentsMagazines componentsMagazines, int x, int y){
+    public ProductionLine(ComponentsMagazines componentsMagazines,ProductMagazine productMagazine, int x, int y){
         this.componentsMagazines = componentsMagazines;
+        this.productMagazine = productMagazine;
         this.x = x;
         this.y = y;
     }
@@ -49,7 +53,7 @@ public class ProductionLine implements Runnable {
                 e.printStackTrace();
             }
         }
-
+        this.product = new Product(firstComponent,secondComponent);
     }
 
     @Override
@@ -62,8 +66,10 @@ public class ProductionLine implements Runnable {
             secondComponent.setX(this.x+10);
             secondComponent.setY(this.y);
             produce();
+            productMagazine.putInto(product);
             firstComponent = null;
             secondComponent = null;
+            product = null;
         }
     }
 }
