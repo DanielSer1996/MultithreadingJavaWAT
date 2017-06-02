@@ -8,6 +8,10 @@ import static java.lang.Thread.sleep;
 public class Clock implements Runnable {
     private int seconds;
 
+    public Clock(){
+        this.seconds = 0;
+    }
+
     public int getSeconds(){
         return this.seconds;
     }
@@ -18,11 +22,13 @@ public class Clock implements Runnable {
 
     @Override
     public void run() {
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while(true) {
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            seconds++;
         }
-        seconds++;
     }
 }

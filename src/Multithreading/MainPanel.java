@@ -3,6 +3,7 @@ package Multithreading;
 import Multithreading.Magazines.ComponentsMagazines;
 import Multithreading.Magazines.ProductMagazine;
 import Multithreading.ProductionLine.ProductionLine;
+import Multithreading.Trucks.Customer;
 import Multithreading.Trucks.ProviderFirst;
 import Multithreading.Trucks.ProviderSecond;
 
@@ -14,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by Daniel on 22.05.2017.
@@ -26,7 +28,11 @@ public class MainPanel extends JPanel implements ActionListener{
     private int numberOfProductionLines;
     private Timer timer;
     private ProductMagazine productMagazine;
+    private Customer customer;
     private Image backgroundImage;
+    private int numberOfProducts;
+    private Semaphore protectNumberOfProducts;
+    private int row = 0;
 
     public MainPanel(){
         this.backgroundImage = loadImage();
@@ -41,16 +47,29 @@ public class MainPanel extends JPanel implements ActionListener{
         componentsMagazines.setProviderFirst(providerFirst);
         componentsMagazines.setProviderSecond(providerSecond);
         numberOfProductionLines = 2;
+        this.numberOfProducts = 0;
+        this.protectNumberOfProducts = new Semaphore(1);
         productionLines = new ArrayList<>();
         addProductionLines();
         timer = new Timer(10,this);
         timer.start();
+        this.customer = new Customer(this,productMagazine);
         startThreads();
+    }
+
+    public void incrementNumberOfProducts(){
+        try{
+            protectNumberOfProducts.acquire();
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+        numberOfProducts++;
+        protectNumberOfProducts.release();
     }
 
     private void addProductionLines(){
         for(int i = 0; i < numberOfProductionLines; i++){
-            productionLines.add(new ProductionLine(componentsMagazines,productMagazine, componentsMagazines.getxFirst() + componentsMagazines.getWidthFirst() + 50,20+i*150));
+            productionLines.add(new ProductionLine(this,componentsMagazines,productMagazine, componentsMagazines.getxFirst() + componentsMagazines.getWidthFirst() + 50,20+i*150));
         }
     }
 
@@ -60,6 +79,7 @@ public class MainPanel extends JPanel implements ActionListener{
         for(ProductionLine pl: productionLines){
             new Thread(pl).start();
         }
+        new Thread(customer).start();
     }
 
     @Override
@@ -90,6 +110,22 @@ public class MainPanel extends JPanel implements ActionListener{
             }
         }
         g.drawImage(productMagazine.getImg(),productMagazine.getX(),productMagazine.getY(),this);
+        row = 0;
+        for(int i = 0; i < productMagazine.getProducts().size(); i++){
+            if(i % 3 == 0 && i != 0) row += productMagazine.getProducts().get(i).getFirstComponent().getHeight() + productMagazine.getProducts().get(i).getSecondComponent().getHeight() + 10;
+
+            g.drawImage(productMagazine.getProducts().get(i).getSecondComponent().getImgSecond(),productMagazine.getX()+25+(i%3)*40,productMagazine.getY()+15+row,this);
+        }
+        row = 0;
+        for(int i = 0; i < productMagazine.getProducts().size(); i++){
+            if(i % 3 == 0 && i != 0) row += productMagazine.getProducts().get(i).getFirstComponent().getHeight() + productMagazine.getProducts().get(i).getSecondComponent().getHeight() + 10;
+            g.drawImage(productMagazine.getProducts().get(i).getFirstComponent().getImgFirst(),productMagazine.getX()+15+(i%3)*40,productMagazine.getY()+15+productMagazine.getProducts().get(i).getSecondComponent().getHeight()+row,this);
+        }
+
+        g.drawImage(customer.getImg(),customer.getX(),customer.getY(),this);
+        g.setColor(Color.black);
+        g.setFont(new Font("Bold",10,20));
+        g.drawString("Manufactured hummers: "+numberOfProducts,30,30);
     }
 
     @Override

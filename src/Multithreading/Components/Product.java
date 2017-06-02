@@ -46,4 +46,12 @@ public class Product {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    public FirstComponent getFirstComponent() {
+        return firstComponent;
+    }
+
+    public SecondComponent getSecondComponent() {
+        return secondComponent;
+    }
 }

@@ -23,7 +23,7 @@ public class ProductMagazine {
 
     public ProductMagazine(MainPanel panel){
         this.panel = panel;
-        this.putIntoMagazine = new Semaphore(12);
+        this.putIntoMagazine = new Semaphore(18);
         this.takeFromMagazine = new Semaphore(0);
         this.addOneInTime = new Semaphore(1);
         this.takeOneInTime = new Semaphore(1);

@@ -5,6 +5,7 @@ import Multithreading.Components.Product;
 import Multithreading.Components.SecondComponent;
 import Multithreading.Magazines.ComponentsMagazines;
 import Multithreading.Magazines.ProductMagazine;
+import Multithreading.MainPanel;
 
 import static java.lang.Thread.sleep;
 
@@ -19,8 +20,10 @@ public class ProductionLine implements Runnable {
     private int x, y;
     private int percent;
     private Product product;
+    private MainPanel panel;
 
-    public ProductionLine(ComponentsMagazines componentsMagazines,ProductMagazine productMagazine, int x, int y){
+    public ProductionLine(MainPanel panel,ComponentsMagazines componentsMagazines,ProductMagazine productMagazine, int x, int y){
+        this.panel = panel;
         this.componentsMagazines = componentsMagazines;
         this.productMagazine = productMagazine;
         this.x = x;
@@ -67,6 +70,7 @@ public class ProductionLine implements Runnable {
             secondComponent.setY(this.y);
             produce();
             productMagazine.putInto(product);
+            panel.incrementNumberOfProducts();
             firstComponent = null;
             secondComponent = null;
             product = null;
