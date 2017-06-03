@@ -44,15 +44,15 @@ public class MainPanel extends JPanel implements ActionListener{
         this.providerFirst = new ProviderFirst(componentsMagazines,this, componentsMagazines.getyFirst()+30);
         this.providerSecond = new ProviderSecond(componentsMagazines,this,componentsMagazines.getySecond()+30);
         this.productMagazine = new ProductMagazine(this);
-        componentsMagazines.setProviderFirst(providerFirst);
-        componentsMagazines.setProviderSecond(providerSecond);
-        numberOfProductionLines = 2;
+        this.componentsMagazines.setProviderFirst(providerFirst);
+        this.componentsMagazines.setProviderSecond(providerSecond);
+        this.numberOfProductionLines = 4;
         this.numberOfProducts = 0;
         this.protectNumberOfProducts = new Semaphore(1);
-        productionLines = new ArrayList<>();
+        this.productionLines = new ArrayList<>();
         addProductionLines();
-        timer = new Timer(10,this);
-        timer.start();
+        this.timer = new Timer(10,this);
+        this.timer.start();
         this.customer = new Customer(this,productMagazine);
         startThreads();
     }

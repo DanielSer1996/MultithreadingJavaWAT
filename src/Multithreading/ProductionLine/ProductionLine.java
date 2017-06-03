@@ -18,9 +18,10 @@ public class ProductionLine implements Runnable {
     private SecondComponent secondComponent;
     private ProductMagazine productMagazine;
     private int x, y;
-    private int percent;
+    private double percent;
     private Product product;
     private MainPanel panel;
+    private int startingUpperY, startingLowerY;
 
     public ProductionLine(MainPanel panel,ComponentsMagazines componentsMagazines,ProductMagazine productMagazine, int x, int y){
         this.panel = panel;
@@ -28,6 +29,8 @@ public class ProductionLine implements Runnable {
         this.productMagazine = productMagazine;
         this.x = x;
         this.y = y;
+        this.startingUpperY = this.y + 60;
+        this.startingLowerY = this.y + 100;
     }
 
     public FirstComponent getFirstComponent() {
@@ -38,12 +41,12 @@ public class ProductionLine implements Runnable {
         return secondComponent;
     }
 
-    public int getPercent(){
+    public double getPercent(){
         return this.percent;
     }
 
     private void calculatePercentage(){
-
+        this.percent = (double)((((this.startingLowerY - this.startingUpperY)-(this.firstComponent.getY()-this.secondComponent.getY()+this.secondComponent.getHeight())/(this.startingLowerY - this.startingUpperY)))*100);
     }
 
     private void produce(){
@@ -55,6 +58,8 @@ public class ProductionLine implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            calculatePercentage();
+            System.out.println(percent);
         }
         this.product = new Product(firstComponent,secondComponent);
     }
