@@ -52,9 +52,9 @@ public class MainPanel extends JPanel implements ActionListener{
         this.productionLines = new ArrayList<>();
         addProductionLines();
         this.timer = new Timer(10,this);
-        this.timer.start();
         this.customer = new Customer(this,productMagazine);
         startThreads();
+        this.timer.start();
     }
 
     public void incrementNumberOfProducts(){
@@ -104,9 +104,13 @@ public class MainPanel extends JPanel implements ActionListener{
         for(ProductionLine pl: productionLines) {
             if (pl.getFirstComponent() != null){
                 g.drawImage(pl.getFirstComponent().getImgFirst(), pl.getFirstComponent().getX(), pl.getFirstComponent().getY(), this);
+
             }
             if (pl.getSecondComponent() != null){
                 g.drawImage(pl.getSecondComponent().getImgSecond(), pl.getSecondComponent().getX(), pl.getSecondComponent().getY(), this);
+                g.setColor(Color.white);
+                g.setFont(new Font("Bold",10,20));
+                g.drawString((int)pl.getPercent()+"%",pl.getFirstComponent().getX(),pl.getFirstComponent().getY()+pl.getFirstComponent().getHeight()+20);
             }
         }
         g.drawImage(productMagazine.getImg(),productMagazine.getX(),productMagazine.getY(),this);

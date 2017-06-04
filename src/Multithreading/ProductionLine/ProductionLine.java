@@ -7,6 +7,8 @@ import Multithreading.Magazines.ComponentsMagazines;
 import Multithreading.Magazines.ProductMagazine;
 import Multithreading.MainPanel;
 
+import java.util.Random;
+
 import static java.lang.Thread.sleep;
 
 /**
@@ -31,6 +33,7 @@ public class ProductionLine implements Runnable {
         this.y = y;
         this.startingUpperY = this.y + 60;
         this.startingLowerY = this.y + 100;
+        percent = 0;
     }
 
     public FirstComponent getFirstComponent() {
@@ -46,7 +49,7 @@ public class ProductionLine implements Runnable {
     }
 
     private void calculatePercentage(){
-        this.percent = (double)((((this.startingLowerY - this.startingUpperY)-(this.firstComponent.getY()-this.secondComponent.getY()+this.secondComponent.getHeight())/(this.startingLowerY - this.startingUpperY)))*100);
+        this.percent = (((double)(startingLowerY - startingUpperY)-(firstComponent.getY()-(secondComponent.getY()+secondComponent.getHeight())))/(startingLowerY-startingUpperY))*100;
     }
 
     private void produce(){
@@ -54,12 +57,11 @@ public class ProductionLine implements Runnable {
             firstComponent.setY(firstComponent.getY() - 1);
             secondComponent.setY(secondComponent.getY() + 1);
             try {
-                sleep(100);
+                sleep(new Random().nextInt(490)+10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             calculatePercentage();
-            System.out.println(percent);
         }
         this.product = new Product(firstComponent,secondComponent);
     }
@@ -69,13 +71,14 @@ public class ProductionLine implements Runnable {
         while (true) {
             firstComponent = componentsMagazines.takeFromMagazineFirst();
             firstComponent.setX(this.x);
-            firstComponent.setY(this.y + 100);
+            firstComponent.setY(this.y + 90);
             secondComponent = componentsMagazines.takeFromMagazineSecond();
             secondComponent.setX(this.x+10);
             secondComponent.setY(this.y);
             produce();
             productMagazine.putInto(product);
             panel.incrementNumberOfProducts();
+            percent = 0;
             firstComponent = null;
             secondComponent = null;
             product = null;
