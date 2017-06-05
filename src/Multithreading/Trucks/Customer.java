@@ -47,7 +47,7 @@ public class Customer implements Runnable{
         this.width = img.getWidth(panel);
         this.height = img.getHeight(panel);
         this.y = productMagazine.getY()+productMagazine.getHeight() - this.height-60;
-        this.packSize = 9;
+        this.packSize = 12;
         isTimeToRand = true;
         this.clock = new Multithreading.Clock.Clock();
         this.pack = new ArrayList<>();

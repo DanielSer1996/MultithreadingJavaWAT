@@ -85,7 +85,7 @@ public class ProviderSecond implements Runnable{
     }
 
     private void prepareToDeliver(){
-        while(pack.size()<8){
+        while(pack.size()<100){
             pack.add(new SecondComponent());
         }
     }

@@ -26,14 +26,16 @@ public class ComponentsMagazines {
     private Semaphore takeFromMagazineSecond, putIntoMagazineSecond;
     private Semaphore protectSingleComponentFirst, protectSingleComponentSecond;
     private Semaphore carBusy;
+    private Semaphore firstDeliverIsNow, secondDeliverIsNow;
     private Semaphore magazineFirstDeliver, magazineSecondDeliver;
     private int xFirst, yFirst, widthFirst, heightFirst;
     private int xSecond, ySecond, widthSecond, heightSecond;
     private Image imgFirst;
     private Image imgSecond;
     private MainPanel panel;
-    ProviderFirst providerFirst;
-    ProviderSecond providerSecond;
+    private ProviderFirst providerFirst;
+    private ProviderSecond providerSecond;
+    private boolean wantComponentFirst, wantComponentSecond;
 
     public ComponentsMagazines(MainPanel panel){
         this.panel = panel;
@@ -45,6 +47,8 @@ public class ComponentsMagazines {
         this.putIntoMagazineSecond = new Semaphore(1);
         this.protectSingleComponentFirst = new Semaphore(1);
         this.protectSingleComponentSecond = new Semaphore(1);
+        this.firstDeliverIsNow = new Semaphore(1);
+        this.secondDeliverIsNow = new Semaphore(1);
         this.carBusy = new Semaphore(1);
         this.imgFirst = loadImage();
         this.imgSecond = loadImage();
@@ -56,6 +60,8 @@ public class ComponentsMagazines {
         this.heightFirst = imgFirst.getHeight(panel);
         this.widthSecond = imgSecond.getWidth(panel);
         this.heightSecond = imgSecond.getHeight(panel);
+        this.wantComponentFirst = false;
+        this.wantComponentSecond = false;
     }
 
     public void setProviderFirst(ProviderFirst providerFirst){
@@ -158,6 +164,7 @@ public class ComponentsMagazines {
         try {
             putIntoMagazineFirst.acquire();
             carBusy.acquire();
+            firstDeliverIsNow.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -171,6 +178,8 @@ public class ComponentsMagazines {
                 e.printStackTrace();
             }
         }
+        wantComponentFirst = true;
+        firstDeliverIsNow.release();
         providerFirst.getAwayFromMagazine();
         carBusy.release();
     }
@@ -179,15 +188,18 @@ public class ComponentsMagazines {
         FirstComponent n;
         try {
             takeFromMagazineFirst.acquire();
+            firstDeliverIsNow.acquire();
             protectSingleComponentFirst.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         n = magazineFirst.remove(0);
         protectSingleComponentFirst.release();
-        if(magazineFirst.size() < 2 && putIntoMagazineFirst.hasQueuedThreads()){
+        if(wantComponentFirst && magazineFirst.size() < 2){
             putIntoMagazineFirst.release();
+            wantComponentFirst = false;
         }
+        firstDeliverIsNow.release();
         return n;
     }
 
@@ -195,6 +207,7 @@ public class ComponentsMagazines {
         try {
             putIntoMagazineSecond.acquire();
             carBusy.acquire();
+            secondDeliverIsNow.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -208,6 +221,8 @@ public class ComponentsMagazines {
                 e.printStackTrace();
             }
         }
+        wantComponentSecond = true;
+        secondDeliverIsNow.release();
         providerSecond.getAwayFromMagazine();
         carBusy.release();
     }
@@ -216,15 +231,18 @@ public class ComponentsMagazines {
         SecondComponent n;
         try {
             takeFromMagazineSecond.acquire();
+            secondDeliverIsNow.acquire();
             protectSingleComponentSecond.acquire();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         n = magazineSecond.remove(0);
         protectSingleComponentSecond.release();
-        if(magazineSecond.size() < 2 && putIntoMagazineSecond.hasQueuedThreads()){
+        if(wantComponentSecond && magazineSecond.size() < 2){
             putIntoMagazineSecond.release();
+            wantComponentSecond = false;
         }
+        secondDeliverIsNow.release();
         return n;
     }
 

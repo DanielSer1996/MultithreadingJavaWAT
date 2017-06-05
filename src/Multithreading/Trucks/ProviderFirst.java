@@ -86,7 +86,7 @@ public class ProviderFirst implements Runnable{
     }
 
     private void prepareToDeliver(){
-        while(pack.size()<10){
+        while(pack.size()<100){
             pack.add(new FirstComponent());
         }
     }
