@@ -41,9 +41,9 @@ public class ComponentsMagazines {
         this.panel = panel;
         this.magazineFirst = new ArrayList<>();
         this.magazineSecond = new ArrayList<>();
-        this.takeFromMagazineFirst = new Semaphore(0);
+        this.takeFromMagazineFirst = new Semaphore(0,true);
         this.putIntoMagazineFirst = new Semaphore(1);
-        this.takeFromMagazineSecond = new Semaphore(0);
+        this.takeFromMagazineSecond = new Semaphore(0,true);
         this.putIntoMagazineSecond = new Semaphore(1);
         this.protectSingleComponentFirst = new Semaphore(1);
         this.protectSingleComponentSecond = new Semaphore(1);
@@ -169,7 +169,7 @@ public class ComponentsMagazines {
             e.printStackTrace();
         }
         providerFirst.comeToMagazine();
-        while(magazineFirst.size() < 10 && firstComponent.size()>0) {
+        while(magazineFirst.size() < 15 && firstComponent.size()>0) {
             magazineFirst.add(firstComponent.remove(0));
             takeFromMagazineFirst.release();
             try {

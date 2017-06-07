@@ -32,7 +32,6 @@ public class MainPanel extends JPanel implements ActionListener{
     private Image backgroundImage;
     private int numberOfProducts;
     private Semaphore protectNumberOfProducts;
-    private int row = 0;
 
     public MainPanel(){
         this.backgroundImage = loadImage();
@@ -82,56 +81,87 @@ public class MainPanel extends JPanel implements ActionListener{
         new Thread(customer).start();
     }
 
+    private void paintMagazines(Graphics g){
+        g.drawImage(componentsMagazines.getImgFirst(), componentsMagazines.getxFirst(), componentsMagazines.getyFirst(), this);
+        g.drawImage(componentsMagazines.getImgSecond(), componentsMagazines.getxSecond(), componentsMagazines.getySecond(), this);
+        g.drawImage(productMagazine.getImg(), productMagazine.getX(), productMagazine.getY(), this);
+    }
+
+    private void paintProviders(Graphics g){
+        g.drawImage(providerFirst.getImg(), providerFirst.getTruckX(), providerFirst.getTruckY(), this);
+        g.drawImage(providerSecond.getImg(), providerSecond.getTruckX(), providerSecond.getTruckY(), this);
+    }
+
+    private void paintFirstComponent(Graphics g){
+        int row = 0;
+        for (int i = 0; i < componentsMagazines.getMagazineFirst().size(); i++) {
+            if(i % 5 == 0 && i != 0) row += 25;
+            g.drawImage(componentsMagazines.getMagazineFirst().get(i).getImgFirst(), componentsMagazines.getxFirst() + 7 + (i % 5) * 38, componentsMagazines.getyFirst() + 8 + row, this);
+        }
+    }
+
+    private void paintSecondComponent(Graphics g){
+        int row = 0;
+        for (int i = 0; i < componentsMagazines.getMagazineSecond().size(); i++) {
+            if(i % 8 == 0 && i != 0) row += 70;
+            g.drawImage(componentsMagazines.getMagazineSecond().get(i).getImgSecond(), componentsMagazines.getxSecond() + 12 + (i % 8) * 23, componentsMagazines.getySecond() + 8 + row, this);
+        }
+    }
+
+    private void paintProductionLines(Graphics g){
+        for (ProductionLine pl : productionLines) {
+            if (pl.getFirstComponent() != null) {
+                g.drawImage(pl.getFirstComponent().getImgFirst(), pl.getFirstComponent().getX(), pl.getFirstComponent().getY(), this);
+                g.setColor(Color.white);
+                g.setFont(new Font("Bold", 10, 20));
+                g.drawString((int) pl.getPercent() + "%", pl.getFirstComponent().getX(), pl.getFirstComponent().getY() + pl.getFirstComponent().getHeight() + 20);
+            }
+            if (pl.getSecondComponent() != null) {
+                g.drawImage(pl.getSecondComponent().getImgSecond(), pl.getSecondComponent().getX(), pl.getSecondComponent().getY(), this);
+            }
+        }
+    }
+
+    private void paintProducts(Graphics g){
+        int row = 0;
+        for (int i = 0; i < productMagazine.getProducts().size(); i++) {
+            if (i % 3 == 0 && i != 0)
+                row += productMagazine.getProducts().get(i).getFirstComponent().getHeight() + productMagazine.getProducts().get(i).getSecondComponent().getHeight() + 10;
+
+            g.drawImage(productMagazine.getProducts().get(i).getSecondComponent().getImgSecond(), productMagazine.getX() + 25 + (i % 3) * 40, productMagazine.getY() + 15 + row, this);
+        }
+        row = 0;
+        for (int i = 0; i < productMagazine.getProducts().size(); i++) {
+            if (i % 3 == 0 && i != 0)
+                row += productMagazine.getProducts().get(i).getFirstComponent().getHeight() + productMagazine.getProducts().get(i).getSecondComponent().getHeight() + 10;
+            g.drawImage(productMagazine.getProducts().get(i).getFirstComponent().getImgFirst(), productMagazine.getX() + 15 + (i % 3) * 40, productMagazine.getY() + 15 + productMagazine.getProducts().get(i).getSecondComponent().getHeight() + row, this);
+        }
+    }
+
+    private void paintCustomer(Graphics g){
+        g.drawImage(customer.getImg(), customer.getX(), customer.getY(), this);
+    }
+
+    private void printManufacturedHummers(Graphics g){
+        g.setColor(Color.black);
+        g.setFont(new Font("Bold", 10, 20));
+        g.drawString("Manufactured hummers: " + numberOfProducts, 30, 30);
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         try {
             Toolkit.getDefaultToolkit().sync();
             super.paintComponent(g);
             g.drawImage(backgroundImage, 0, 0, this);
-            g.drawImage(componentsMagazines.getImgFirst(), componentsMagazines.getxFirst(), componentsMagazines.getyFirst(), this);
-            g.drawImage(componentsMagazines.getImgSecond(), componentsMagazines.getxSecond(), componentsMagazines.getySecond(), this);
-            g.drawImage(providerFirst.getImg(), providerFirst.getTruckX(), providerFirst.getTruckY(), this);
-            g.drawImage(providerSecond.getImg(), providerSecond.getTruckX(), providerSecond.getTruckY(), this);
-            for (int i = 0; i < componentsMagazines.getMagazineFirst().size() && i < 5; i++) {
-                g.drawImage(componentsMagazines.getMagazineFirst().get(i).getImgFirst(), componentsMagazines.getxFirst() + 7 + i * 38, componentsMagazines.getyFirst() + 8, this);
-            }
-            for (int i = 5; i < componentsMagazines.getMagazineFirst().size(); i++) {
-                g.drawImage(componentsMagazines.getMagazineFirst().get(i).getImgFirst(), componentsMagazines.getxFirst() + 7 + (i - 5) * 38, componentsMagazines.getyFirst() + 48, this);
-
-            }
-            for (int i = 0; i < componentsMagazines.getMagazineSecond().size(); i++) {
-                g.drawImage(componentsMagazines.getMagazineSecond().get(i).getImgSecond(), componentsMagazines.getxSecond() + 12 + i * 23, componentsMagazines.getySecond() + 8, this);
-            }
-            for (ProductionLine pl : productionLines) {
-                if (pl.getFirstComponent() != null) {
-                    g.drawImage(pl.getFirstComponent().getImgFirst(), pl.getFirstComponent().getX(), pl.getFirstComponent().getY(), this);
-                    g.setColor(Color.white);
-                    g.setFont(new Font("Bold", 10, 20));
-                    g.drawString((int) pl.getPercent() + "%", pl.getFirstComponent().getX(), pl.getFirstComponent().getY() + pl.getFirstComponent().getHeight() + 20);
-                }
-                if (pl.getSecondComponent() != null) {
-                    g.drawImage(pl.getSecondComponent().getImgSecond(), pl.getSecondComponent().getX(), pl.getSecondComponent().getY(), this);
-                }
-            }
-            g.drawImage(productMagazine.getImg(), productMagazine.getX(), productMagazine.getY(), this);
-            row = 0;
-            for (int i = 0; i < productMagazine.getProducts().size(); i++) {
-                if (i % 3 == 0 && i != 0)
-                    row += productMagazine.getProducts().get(i).getFirstComponent().getHeight() + productMagazine.getProducts().get(i).getSecondComponent().getHeight() + 10;
-
-                g.drawImage(productMagazine.getProducts().get(i).getSecondComponent().getImgSecond(), productMagazine.getX() + 25 + (i % 3) * 40, productMagazine.getY() + 15 + row, this);
-            }
-            row = 0;
-            for (int i = 0; i < productMagazine.getProducts().size(); i++) {
-                if (i % 3 == 0 && i != 0)
-                    row += productMagazine.getProducts().get(i).getFirstComponent().getHeight() + productMagazine.getProducts().get(i).getSecondComponent().getHeight() + 10;
-                g.drawImage(productMagazine.getProducts().get(i).getFirstComponent().getImgFirst(), productMagazine.getX() + 15 + (i % 3) * 40, productMagazine.getY() + 15 + productMagazine.getProducts().get(i).getSecondComponent().getHeight() + row, this);
-            }
-
-            g.drawImage(customer.getImg(), customer.getX(), customer.getY(), this);
-            g.setColor(Color.black);
-            g.setFont(new Font("Bold", 10, 20));
-            g.drawString("Manufactured hummers: " + numberOfProducts, 30, 30);
+            paintMagazines(g);
+            paintProviders(g);
+            paintFirstComponent(g);
+            paintSecondComponent(g);
+            paintProductionLines(g);
+            paintProducts(g);
+            paintCustomer(g);
+            printManufacturedHummers(g);
         }catch(NullPointerException e){
 
         }catch (IndexOutOfBoundsException e){
