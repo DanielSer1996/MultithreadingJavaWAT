@@ -76,80 +76,28 @@ public class ComponentsMagazines {
         return xFirst;
     }
 
-    public void setxFirst(int xFirst) {
-        this.xFirst = xFirst;
-    }
-
     public int getyFirst() {
         return yFirst;
-    }
-
-    public void setyFirst(int yFirst) {
-        this.yFirst = yFirst;
     }
 
     public int getWidthFirst() {
         return widthFirst;
     }
 
-    public void setWidthFirst(int widthFirst) {
-        this.widthFirst = widthFirst;
-    }
-
-    public int getHeightFirst() {
-        return heightFirst;
-    }
-
-    public void setHeightFirst(int heightFirst) {
-        this.heightFirst = heightFirst;
-    }
-
     public Image getImgFirst() {
         return imgFirst;
-    }
-
-    public void setImgFirst(Image imgFirst) {
-        this.imgFirst = imgFirst;
     }
 
     public int getxSecond() {
         return xSecond;
     }
 
-    public void setxSecond(int xSecond) {
-        this.xSecond = xSecond;
-    }
-
     public int getySecond() {
         return ySecond;
     }
 
-    public void setySecond(int ySecond) {
-        this.ySecond = ySecond;
-    }
-
-    public int getWidthSecond() {
-        return widthSecond;
-    }
-
-    public void setWidthSecond(int widthSecond) {
-        this.widthSecond = widthSecond;
-    }
-
-    public int getHeightSecond() {
-        return heightSecond;
-    }
-
-    public void setHeightSecond(int heightSecond) {
-        this.heightSecond = heightSecond;
-    }
-
     public Image getImgSecond() {
         return imgSecond;
-    }
-
-    public void setImgSecond(Image imgSecond) {
-        this.imgSecond = imgSecond;
     }
 
     public List<FirstComponent> getMagazineFirst() {

@@ -1,5 +1,9 @@
 package Multithreading.Clock;
 
+import Multithreading.Trucks.Customer;
+
+import java.util.Random;
+
 import static java.lang.Thread.sleep;
 
 /**
@@ -7,19 +11,14 @@ import static java.lang.Thread.sleep;
  */
 public class Clock implements Runnable {
     private int seconds;
+    private int randomTime;
+    private Customer customer;
 
-    public Clock(){
+    public Clock(Customer customer){
+        this.customer = customer;
         this.seconds = 0;
+        this.randomTime = new Random().nextInt(10)+5;
     }
-
-    public int getSeconds(){
-        return this.seconds;
-    }
-
-    public void setSeconds(int seconds){
-        this.seconds = seconds;
-    }
-
     @Override
     public void run() {
         while(true) {
@@ -29,6 +28,11 @@ public class Clock implements Runnable {
                 e.printStackTrace();
             }
             seconds++;
+            if(seconds == randomTime){
+                customer.semaphoreUp();
+                this.randomTime = new Random().nextInt(10)+5;
+                seconds = 0;
+            }
         }
     }
 }

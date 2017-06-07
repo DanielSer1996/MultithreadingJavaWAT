@@ -9,7 +9,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 import static java.lang.Thread.sleep;
 
@@ -19,13 +19,11 @@ import static java.lang.Thread.sleep;
 public class Customer implements Runnable{
     private int x, y, width, height;
     private Image img;
-    private MainPanel panel;
     private ProductMagazine productMagazine;
     private int packSize;
-    private boolean isTimeToRand;
-    private int comingDelay;
     private Multithreading.Clock.Clock clock;
     private ArrayList<Product> pack;
+    private Semaphore waitForTurn;
 
     public int getX() {
         return x;
@@ -40,7 +38,6 @@ public class Customer implements Runnable{
     }
 
     public Customer(MainPanel panel, ProductMagazine productMagazine){
-        this.panel = panel;
         this.productMagazine = productMagazine;
         this.x = 801;
         this.img = loadImage();
@@ -48,9 +45,9 @@ public class Customer implements Runnable{
         this.height = img.getHeight(panel);
         this.y = productMagazine.getY()+productMagazine.getHeight() - this.height-60;
         this.packSize = 12;
-        isTimeToRand = true;
-        this.clock = new Multithreading.Clock.Clock();
+        this.clock = new Multithreading.Clock.Clock(this);
         this.pack = new ArrayList<>();
+        this.waitForTurn = new Semaphore(0);
         new Thread(clock).start();
     }
 
@@ -61,11 +58,6 @@ public class Customer implements Runnable{
             e.printStackTrace();
             return null;
         }
-    }
-
-    private void randomTime(){
-        this.comingDelay = new Random().nextInt(10)+5;
-        this.isTimeToRand = false;
     }
 
     private void comeToMagazine(){
@@ -90,29 +82,22 @@ public class Customer implements Runnable{
         }
     }
 
+    public void semaphoreUp(){
+        this.waitForTurn.release();
+    }
+
     @Override
     public void run() {
         while(true) {
-            if (isTimeToRand) {
-                randomTime();
-            }
-            if (clock.getSeconds() == comingDelay) {
+            try {
+                waitForTurn.acquire();
                 comeToMagazine();
                 for (int i = 0; i < packSize && productMagazine.getProducts().size()>0; i++) {
                     pack.add(productMagazine.takeFrom());
-                    try {
-                        sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    sleep(50);
                 }
                 getOutFromMagazine();
-                clock.setSeconds(0);
-                isTimeToRand = true;
-            }
-            try {
-                sleep(100);
-            } catch (InterruptedException e) {
+            }catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

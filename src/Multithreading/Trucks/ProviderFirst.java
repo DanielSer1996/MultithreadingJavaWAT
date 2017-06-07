@@ -1,7 +1,6 @@
 package Multithreading.Trucks;
 
 import Multithreading.Components.FirstComponent;
-import Multithreading.Components.SecondComponent;
 import Multithreading.Magazines.ComponentsMagazines;
 
 import javax.imageio.ImageIO;
@@ -10,8 +9,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
 
 import static java.lang.Thread.sleep;
 
@@ -40,40 +37,12 @@ public class ProviderFirst implements Runnable{
         return img;
     }
 
-    public void setImg(Image img) {
-        this.img = img;
-    }
-
     public int getTruckX() {
         return truckX;
     }
 
-    public void setTruckX(int truckX) {
-        this.truckX = truckX;
-    }
-
     public int getTruckY() {
         return truckY;
-    }
-
-    public void setTruckY(int truckY) {
-        this.truckY = truckY;
-    }
-
-    public int getTruckWidth() {
-        return truckWidth;
-    }
-
-    public void setTruckWidth(int truckWidth) {
-        this.truckWidth = truckWidth;
-    }
-
-    public int getTruckHeight() {
-        return truckHeight;
-    }
-
-    public void setTruckHeight(int truckHeight) {
-        this.truckHeight = truckHeight;
     }
 
     private Image loadImage(){
